@@ -1,0 +1,11 @@
+﻿{
+	"name": "BloodMageMod",
+	"version_number": "0.0.1",
+	"website_url": "",
+	"description": "Adds the Blood Mage, a powerful magician whos focus is using the blood of her and her enemies to deal immense damage.",
+	"dependencies": [
+		"bbepis-BepInExPack-5.4.9",
+		"RiskofThunder-HookGenPatcher-1.2.1",
+		"tristanmcpherson-R2API-3.0.50"
+	]
+}
