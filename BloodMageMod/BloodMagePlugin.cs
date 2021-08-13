@@ -28,10 +28,10 @@ namespace BloodMageMod {
         public const string developerPrefix = "TNTFTW21";
 
         public void Awake() {
-
+            Log.Init(Logger);
+            Modules.Assets.Initialize();
             Modules.Tokens.AddTokens();
             Modules.Buffs.RegisterBuffs();
-            Log.Init(Logger);
 
             Hook();
 

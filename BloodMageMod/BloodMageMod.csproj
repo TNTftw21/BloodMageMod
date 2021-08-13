@@ -10,6 +10,11 @@
     <Compile Remove="libs/**" />
     <EmbeddedResource Remove="libs/**" />
     <None Remove="libs/**" />
+    <None Remove="bloodmagebundle" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="bloodmagebundle" />
   </ItemGroup>
 
   <ItemGroup>

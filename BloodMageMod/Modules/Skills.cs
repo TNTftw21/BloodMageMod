@@ -78,7 +78,7 @@ namespace BloodMageMod.Modules
 
         private static void PrimarySetup(GameObject targetPrefab)
         {
-            SkillDef bloodBoltDef = Modules.Skills.CreatePrimarySkillDef(new SerializableEntityStateType(typeof(SkillStates.BloodBoltState)), "Weapon", "BLOODBOLT", Resources.Load<Sprite>("NotAnActualPath"), false, new string[] { "KEYWORD_SANGUINE" });
+            SkillDef bloodBoltDef = Modules.Skills.CreatePrimarySkillDef(new SerializableEntityStateType(typeof(SkillStates.BloodBoltState)), "Weapon", "BLOODBOLT", Assets.mainAssetBundle.LoadAsset<Sprite>("assets/sprites/skills/bloodbolt.png"), false, new string[] { "KEYWORD_SANGUINE" });
             AddPrimarySkill(targetPrefab, bloodBoltDef);
         }
 
