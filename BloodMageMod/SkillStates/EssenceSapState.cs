@@ -50,8 +50,7 @@ namespace BloodMageMod.SkillStates
         public override void FixedUpdate()
         {
             base.FixedUpdate();
-            bool canHeal = this.healthComponent.health < this.healthComponent.fullHealth * (base.characterBody.HasBuff(Modules.Buffs.petrifiedBloodBuff.BuffDef) ? 0.5f : 1);
-            if (base.isAuthority && (!base.IsKeyDownAuthority() || !canHeal)) {
+            if (base.isAuthority && !base.IsKeyDownAuthority()) {
                 this.outer.SetNextStateToMain();
                 return;
             }
@@ -60,7 +59,8 @@ namespace BloodMageMod.SkillStates
                 return;
             }
 
-            if (!this.target.GetComponent<HealthComponent>().alive && base.isAuthority) {
+            bool canHeal = this.healthComponent.health < this.healthComponent.fullHealth * (base.characterBody.HasBuff(Modules.Buffs.petrifiedBloodBuff.BuffDef) ? 0.5f : 1);
+            if ((!this.target.GetComponent<HealthComponent>().alive || !canHeal) && base.isAuthority) {
                 this.outer.SetNextStateToMain();
                 return;
             }

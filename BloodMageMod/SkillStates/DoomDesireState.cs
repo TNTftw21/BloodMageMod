@@ -4,6 +4,8 @@ using System;
 using UnityEngine;
 using UnityEngine.Networking;
 
+using static BloodMageMod.Modules.Buffs;
+
 namespace BloodMageMod.SkillStates
 {
     public class DoomDesireState : BaseSkillState
@@ -15,38 +17,53 @@ namespace BloodMageMod.SkillStates
         }
 
         private const float duration = 10.0f;
-        private const float damageCoefficient = 30.0f;
+        private const float damageCoefficient = 10.0f;
 
         public override void OnEnter()
         {
             base.OnEnter();
             if (base.isAuthority) {
-                Ray aimRay = base.GetAimRay();
-                RaycastHit hit;
-                bool hitSomething = Physics.Raycast(aimRay.origin, aimRay.direction, out hit, 50f, LayerIndex.world.mask | LayerIndex.entityPrecise.mask, QueryTriggerInteraction.Ignore);
-                if (!hitSomething) {
-                    base.activatorSkillSlot.AddOneStock();
-                    outer.SetNextStateToMain();
-                    return;
+                DoomDesireTracker ddt = base.gameObject.GetComponent<DoomDesireTracker>();
+                if (ddt != null && ddt.target != null) {
+                    Chat.AddMessage("Detonating current debuff!");
+                    ddt.target.body.RemoveBuff(doomDesireBuff.BuffDef);
+                    base.characterBody.RemoveBuff(doomDesireBuff.BuffDef);
+                } else {
+                    Ray aimRay = base.GetAimRay();
+                    RaycastHit hit;
+                    bool hitSomething = Physics.Raycast(aimRay.origin, aimRay.direction, out hit, 50f, LayerIndex.world.mask | LayerIndex.entityPrecise.mask, QueryTriggerInteraction.Ignore);
+                    if (!hitSomething) {
+                        base.activatorSkillSlot.AddOneStock();
+                        outer.SetNextStateToMain();
+                        return;
+                    }
+                    HurtBox hitHurtBox = hit.collider.GetComponent<HurtBox>();
+                    if (hitHurtBox && hitHurtBox.teamIndex == TeamIndex.Monster)
+                    {
+                        HealthComponent hitTarget = hitHurtBox.healthComponent;
+                        if (!ddt)
+                            ddt = base.gameObject.AddComponent<DoomDesireTracker>();
+                        ddt.target = hitTarget;
+                        hitTarget.body.AddTimedBuff(doomDesireBuff.BuffDef, duration, 1);
+                        base.characterBody.AddTimedBuff(doomDesireBuff.BuffDef, duration, 1);
+                    } else
+                    {
+                        base.activatorSkillSlot.AddOneStock();
+                    }
                 }
-                Log.LogInfo("Layer index of object: " + hit.rigidbody.gameObject.layer);
-                if (hit.rigidbody.gameObject.GetComponent<CharacterBody>().teamComponent.teamIndex == TeamIndex.Monster)
-                {
-                    HealthComponent hitTarget = hit.rigidbody.gameObject.GetComponent<HealthComponent>();
-                    DoomDesireTracker ddt = base.gameObject.GetComponent<DoomDesireTracker>();
-                    if (!ddt)
-                        ddt = base.gameObject.AddComponent<DoomDesireTracker>();
-                    ddt.target = hitTarget;
-                    hitTarget.body.AddTimedBuff(Modules.Buffs.doomDesireBuff.BuffDef, duration, 1);
-                    base.characterBody.AddTimedBuff(Modules.Buffs.doomDesireBuff.BuffDef, duration, 1);
-                } else
-                {
-                    base.activatorSkillSlot.AddOneStock();
-                }
+                
                 outer.SetNextStateToMain();
                 return;
             }
-            
+        }
+
+        public override void FixedUpdate()
+        {
+            base.FixedUpdate();
+            if (base.isAuthority) {
+                outer.SetNextStateToMain();
+                return;
+            }
         }
 
         public override InterruptPriority GetMinimumInterruptPriority() {
@@ -55,17 +72,17 @@ namespace BloodMageMod.SkillStates
 
         public static void TakeDamage(On.RoR2.HealthComponent.orig_TakeDamage orig, HealthComponent self, DamageInfo info)
         {
+            orig(self, info);
+
             DoomDesireTracker ddt = self.GetComponent<DoomDesireTracker>();
-            if (info != null && ddt != null && self.body.HasBuff(Modules.Buffs.doomDesireBuff.BuffDef)) {
+            if (info != null && !info.rejected && ddt != null && self.body.HasBuff(doomDesireBuff.BuffDef)) {
                 ddt.StoredDamage += info.damage;
             }
-
-            orig(self, info);
         }
 
         public static void DoomDesireProc(On.RoR2.CharacterBody.orig_OnBuffFinalStackLost orig, CharacterBody self, BuffDef buffDef)
         {
-            if (buffDef.buffIndex == Modules.Buffs.doomDesireBuff.BuffDef.buffIndex)
+            if (buffDef.buffIndex == doomDesireBuff.BuffDef.buffIndex)
             {
                 DoomDesireTracker ddt = self.gameObject.GetComponent<DoomDesireTracker>();
                 if (ddt) {
@@ -83,6 +100,8 @@ namespace BloodMageMod.SkillStates
                         falloffModel = BlastAttack.FalloffModel.Linear,
                         position = target.body.corePosition
                     }.Fire();
+                    ddt.target = null;
+                    ddt.StoredDamage = 0;
                 }
             }
 
