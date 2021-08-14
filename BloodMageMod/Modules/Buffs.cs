@@ -16,9 +16,9 @@ namespace BloodMageMod.Modules
 
         public static void RegisterBuffs()
         {
-            BuffAPI.Add(petrifiedBloodBuff = new CustomBuff("Petrified Blood", Resources.Load<Sprite>("Textures/BuffIcons/texBuffPetrifiedBlood"),
+            BuffAPI.Add(petrifiedBloodBuff = new CustomBuff("Petrified Blood", Assets.mainAssetBundle.LoadAsset<Sprite>("assets/sprites/buffs/petrifiedblood.png"),
                 new Color(0.8039216f, 0.482352942f, 0.843137264f), false, false));
-            BuffAPI.Add(doomDesireBuff = new CustomBuff("Doom Desire", Resources.Load<Sprite>("Textures/BuffIcons/texBuffDoomDesire"),
+            BuffAPI.Add(doomDesireBuff = new CustomBuff("Doom Desire", Assets.mainAssetBundle.LoadAsset<Sprite>("assets/sprites/buffs/doomdesire.png"),
                 new Color(0.560784214f, 0.247058824f, 0.729411765f), true, false));
         }
     }

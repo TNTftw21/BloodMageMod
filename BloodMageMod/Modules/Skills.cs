@@ -78,7 +78,8 @@ namespace BloodMageMod.Modules
 
         private static void PrimarySetup(GameObject targetPrefab)
         {
-            SkillDef bloodBoltDef = Modules.Skills.CreatePrimarySkillDef(new SerializableEntityStateType(typeof(SkillStates.BloodBoltState)), "Weapon", "BLOODBOLT", Assets.mainAssetBundle.LoadAsset<Sprite>("assets/sprites/skills/bloodbolt.png"), false, new string[] { "KEYWORD_SANGUINE" });
+            SkillDef bloodBoltDef = Modules.Skills.CreatePrimarySkillDef(new SerializableEntityStateType(typeof(SkillStates.BloodBoltState)), "Weapon", "BLOODBOLT",
+                Assets.mainAssetBundle.LoadAsset<Sprite>("assets/sprites/skills/bloodbolt.png"), false, new string[] { "KEYWORD_SANGUINE" });
             AddPrimarySkill(targetPrefab, bloodBoltDef);
         }
 
@@ -88,7 +89,7 @@ namespace BloodMageMod.Modules
                 skillName = "ESSENCESAP",
                 skillNameToken = Modules.Tokens.prefix + "SECONDARY_ESSENCESAP_NAME",
                 skillDescriptionToken = Modules.Tokens.prefix + "SECONDARY_ESSENCESAP_DESC",
-                skillIcon = Resources.Load<Sprite>("NotAnActualPath"),
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("assets/sprites/skills/essencesap.png"),
                 activationState = new SerializableEntityStateType(typeof(SkillStates.EssenceSapState)),
                 activationStateMachineName = "Weapon",
                 baseMaxStock = 1,
@@ -117,7 +118,7 @@ namespace BloodMageMod.Modules
                 skillName = "PETRIBLOOD",
                 skillNameToken = Modules.Tokens.prefix + "UTILITY_PETRIBLOOD_NAME",
                 skillDescriptionToken = Modules.Tokens.prefix + "UTILITY_PETRIBLOOD_DESC",
-                skillIcon = Resources.Load<Sprite>("NotAnActualPath"),
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("assets/sprites/skills/petrifiedblood.png"),
                 activationState = new SerializableEntityStateType(typeof(SkillStates.PetrifiedBloodState)),
                 activationStateMachineName = "Weapon",
                 baseMaxStock = 1,
@@ -146,7 +147,7 @@ namespace BloodMageMod.Modules
                 skillName = "DOOMDESIRE",
                 skillNameToken = Modules.Tokens.prefix + "SPECIAL_DOOMDESIRE_NAME",
                 skillDescriptionToken = Modules.Tokens.prefix + "SPECIAL_DOOMDESIRE_DESC",
-                skillIcon = Resources.Load<Sprite>("NotAnActualPath"),
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("assets/sprites/skills/doomdesire.png"),
                 activationState = new SerializableEntityStateType(typeof(SkillStates.DoomDesireState)),
                 activationStateMachineName = "Weapon",
                 baseMaxStock = 1,
