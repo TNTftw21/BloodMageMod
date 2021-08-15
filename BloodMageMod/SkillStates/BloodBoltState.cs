@@ -7,8 +7,8 @@ using UnityEngine.Networking;
 namespace BloodMageMod.SkillStates {
     public class BloodBoltState : BaseSkillState {
 
-        private const float baseHealthPerTick = 3.0f;
-        private const float ticksPerSecond = 5f;
+        private const float baseHealthPerTick = 7.5f;
+        private const float ticksPerSecond = 2f;
         private const float damageCoefficient = 2.0f;
         public GameObject hitEffectPrefab = Resources.Load<GameObject>("prefabs/effects/impacteffects/critspark");
         public GameObject tracerEffectPrefab = Resources.Load<GameObject>("prefabs/effects/tracers/tracerbanditshotgun");
@@ -78,9 +78,16 @@ namespace BloodMageMod.SkillStates {
         private bool SelfDamage() {
             float healthToTake = RoR2.Run.instance.compensatedDifficultyCoefficient * baseHealthPerTick;
             if (base.characterBody.healthComponent.combinedHealth > baseHealthPerTick) {
-                DamageInfo info = new DamageInfo();
-                info.damage = baseHealthPerTick;
-                info.damageType = DamageType.DoT;
+                DamageInfo info = new DamageInfo() {
+                    attacker = base.gameObject,
+                    crit = false,
+                    damage = baseHealthPerTick * RoR2.Run.instance.compensatedDifficultyCoefficient,
+                    force = Vector3.zero,
+                    inflictor = base.gameObject,
+                    position = base.rigidbody.position,
+                    procCoefficient = 0f,
+                    damageType = DamageType.DoT
+                };
                 this.characterBody.healthComponent.TakeDamage(info);
                 this.healthAbsorb += baseHealthPerTick;
                 return true;

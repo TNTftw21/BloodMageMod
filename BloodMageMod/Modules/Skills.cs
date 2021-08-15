@@ -62,10 +62,6 @@ namespace BloodMageMod.Modules
             SecondarySetup(targetPrefab);
             UtilitySetup(targetPrefab);
             SpecialSetup(targetPrefab);
-
-            foreach (SkillDef def in skillDefs) {
-                LoadoutAPI.AddSkillDef(def);
-            }
         } 
 
         private static void PassiveSetup()

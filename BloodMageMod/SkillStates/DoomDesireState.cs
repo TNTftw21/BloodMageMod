@@ -26,8 +26,8 @@ namespace BloodMageMod.SkillStates
                 DoomDesireTracker ddt = base.gameObject.GetComponent<DoomDesireTracker>();
                 if (ddt != null && ddt.target != null) {
                     Chat.AddMessage("Detonating current debuff!");
-                    ddt.target.body.RemoveBuff(doomDesireBuff.BuffDef);
-                    base.characterBody.RemoveBuff(doomDesireBuff.BuffDef);
+                    ddt.target.body.RemoveBuff(doomDesireBuff);
+                    base.characterBody.RemoveBuff(doomDesireBuff);
                 } else {
                     Ray aimRay = base.GetAimRay();
                     RaycastHit hit;
@@ -44,8 +44,8 @@ namespace BloodMageMod.SkillStates
                         if (!ddt)
                             ddt = base.gameObject.AddComponent<DoomDesireTracker>();
                         ddt.target = hitTarget;
-                        hitTarget.body.AddTimedBuff(doomDesireBuff.BuffDef, duration, 1);
-                        base.characterBody.AddTimedBuff(doomDesireBuff.BuffDef, duration, 1);
+                        hitTarget.body.AddTimedBuff(doomDesireBuff, duration, 1);
+                        base.characterBody.AddTimedBuff(doomDesireBuff, duration, 1);
                     } else
                     {
                         base.activatorSkillSlot.AddOneStock();
@@ -75,14 +75,14 @@ namespace BloodMageMod.SkillStates
             orig(self, info);
 
             DoomDesireTracker ddt = self.GetComponent<DoomDesireTracker>();
-            if (info != null && !info.rejected && ddt != null && self.body.HasBuff(doomDesireBuff.BuffDef)) {
+            if (info != null && !info.rejected && ddt != null && self.body.HasBuff(doomDesireBuff)) {
                 ddt.StoredDamage += info.damage;
             }
         }
 
         public static void DoomDesireProc(On.RoR2.CharacterBody.orig_OnBuffFinalStackLost orig, CharacterBody self, BuffDef buffDef)
         {
-            if (buffDef.buffIndex == doomDesireBuff.BuffDef.buffIndex)
+            if (buffDef.buffIndex == doomDesireBuff.buffIndex)
             {
                 DoomDesireTracker ddt = self.gameObject.GetComponent<DoomDesireTracker>();
                 if (ddt) {

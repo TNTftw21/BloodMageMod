@@ -20,30 +20,31 @@ namespace BloodMageMod.SkillStates
         public override void OnEnter()
         {
             base.OnEnter();
-            if (base.isAuthority && base.healthComponent.health < base.healthComponent.fullHealth) {
+            if (base.isAuthority && base.healthComponent.health < base.healthComponent.fullHealth * (base.characterBody.HasBuff(Modules.Buffs.petrifiedBloodBuff) ? 0.5f : 1)) {
                 Ray aimRay = base.GetAimRay();
-                new BulletAttack
-                {
-                    owner = base.gameObject,
-                    weapon = base.gameObject,
-                    origin = aimRay.origin,
-                    aimVector = aimRay.direction,
-                    minSpread = 0f,
-                    maxSpread = 0f,
-                    bulletCount = 1U,
-                    procCoefficient = 0f,
-                    damage = healthPercent * base.healthComponent.fullHealth,
-                    damageType = DamageType.DoT,
-                    force = 0,
-                    falloffModel = BulletAttack.FalloffModel.None,
-                    tracerEffectPrefab = this.tracerEffectPrefab,
-                    hitEffectPrefab = this.hitEffectPrefab,
-                    isCrit = false,
-                    stopperMask = LayerIndex.world.mask,
-                    smartCollision = true,
-                    maxDistance = 50f,
-                    hitCallback = this.OnHit,
-                }.Fire();
+                RaycastHit hit;
+                bool hitSomething = Physics.Raycast(aimRay.origin, aimRay.direction, out hit, 50f, LayerIndex.world.mask | LayerIndex.entityPrecise.mask, QueryTriggerInteraction.Ignore);
+                if (!hitSomething) {
+                    base.activatorSkillSlot.AddOneStock();
+                    outer.SetNextStateToMain();
+                    return;
+                }
+                HurtBox hitHurtBox = hit.collider.GetComponent<HurtBox>();
+                if (hitHurtBox != null && hitHurtBox.teamIndex == TeamIndex.Monster) {
+                    HealthComponent hitTarget = hitHurtBox.healthComponent;
+                    target = hitTarget.gameObject;
+                    hitTarget.TakeDamage(new DamageInfo {
+                        attacker = base.gameObject,
+                        crit = false,
+                        damage = healthPercent * base.healthComponent.fullHealth,
+                        force = Vector3.zero,
+                        inflictor = base.gameObject,
+                        position = target.GetComponent<Rigidbody>().position,
+                        procCoefficient = 0f,
+                        damageType = DamageType.DoT
+                    });
+                    base.healthComponent.HealFraction(0.1f, new ProcChainMask());
+                }
             }
         }
 
@@ -59,7 +60,7 @@ namespace BloodMageMod.SkillStates
                 return;
             }
 
-            bool canHeal = this.healthComponent.health < this.healthComponent.fullHealth * (base.characterBody.HasBuff(Modules.Buffs.petrifiedBloodBuff.BuffDef) ? 0.5f : 1);
+            bool canHeal = this.healthComponent.health < this.healthComponent.fullHealth * (base.characterBody.HasBuff(Modules.Buffs.petrifiedBloodBuff) ? 0.5f : 1);
             if ((!this.target.GetComponent<HealthComponent>().alive || !canHeal) && base.isAuthority) {
                 this.outer.SetNextStateToMain();
                 return;
@@ -95,18 +96,6 @@ namespace BloodMageMod.SkillStates
 
         public override InterruptPriority GetMinimumInterruptPriority() {
             return InterruptPriority.PrioritySkill;
-        }
-
-        protected bool OnHit(ref BulletAttack.BulletHit bulletHit)
-        {
-            this.target = bulletHit.entityObject;
-            var targetBod = this.target.GetComponent<CharacterBody>();
-            if (targetBod != null && targetBod.teamComponent.teamIndex == TeamIndex.Monster) {
-                base.healthComponent.HealFraction(healthPercent, new ProcChainMask());
-            } else {
-                this.target = null;
-            }
-            return true;
         }
     }
 }

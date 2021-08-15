@@ -24,6 +24,8 @@ namespace BloodMageMod.Modules.Survivors
         internal abstract BodyInfo bodyInfo { get; set; }
 
         internal abstract int mainRendererIndex { get; set; }
+        internal abstract CustomRendererInfo[] CustomRendererInfos { get; set; }
+        
 
     }
 }

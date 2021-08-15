@@ -27,11 +27,11 @@ namespace BloodMageMod.SkillStates
             base.OnEnter();
             
             if (base.isAuthority) {
-                BuffDef pbDef = petrifiedBloodBuff.BuffDef;
-                if (base.characterBody.HasBuff(petrifiedBloodBuff.BuffDef)) {
-                    base.characterBody.RemoveBuff(petrifiedBloodBuff.BuffDef);
+                BuffDef pbDef = petrifiedBloodBuff;
+                if (base.characterBody.HasBuff(petrifiedBloodBuff)) {
+                    base.characterBody.RemoveBuff(petrifiedBloodBuff);
                 } else {
-                    base.characterBody.AddBuff(petrifiedBloodBuff.BuffDef);
+                    base.characterBody.AddBuff(petrifiedBloodBuff);
                     if (base.healthComponent.health / base.healthComponent.fullHealth > 0.5f)
                         base.healthComponent.health = base.healthComponent.fullHealth * 0.5f;
                 }
@@ -46,7 +46,7 @@ namespace BloodMageMod.SkillStates
 
         public static void TakeDamage(On.RoR2.HealthComponent.orig_TakeDamage orig, HealthComponent self, DamageInfo damageInfo)
         {
-            if (damageInfo != null && self.body.HasBuff(petrifiedBloodBuff.BuffDef)) {
+            if (damageInfo != null && self.body.HasBuff(petrifiedBloodBuff)) {
                 PBDegenComponent degenComp = self.GetComponent<PBDegenComponent>();
                 if (!degenComp) degenComp = self.gameObject.AddComponent<PBDegenComponent>();
 
@@ -67,7 +67,7 @@ namespace BloodMageMod.SkillStates
         {
             orig(self);
 
-            if (self.HasBuff(petrifiedBloodBuff.BuffDef) && self.healthComponent.health / self.healthComponent.fullHealth > 0.5f)
+            if (self.HasBuff(petrifiedBloodBuff) && self.healthComponent.health / self.healthComponent.fullHealth > 0.5f)
                 self.healthComponent.health = self.healthComponent.fullHealth * 0.5f;
 
             PBDegenComponent degenComp = self.GetComponent<PBDegenComponent>();
@@ -81,7 +81,7 @@ namespace BloodMageMod.SkillStates
         }
 
         public static float PreventHeal(On.RoR2.HealthComponent.orig_Heal orig, HealthComponent self, float amount, ProcChainMask mask, bool nonRegen = true) {
-            if (self.body.HasBuff(petrifiedBloodBuff.BuffDef)) {
+            if (self.body.HasBuff(petrifiedBloodBuff)) {
                 float finalHealth = self.health + amount;
                 if (finalHealth / self.fullHealth > 0.5f) {
                     float diff = finalHealth - (self.fullHealth * 0.5f);
@@ -93,7 +93,7 @@ namespace BloodMageMod.SkillStates
         }
 
         public static float PreventHealFraction(On.RoR2.HealthComponent.orig_HealFraction orig, HealthComponent self, float percent, ProcChainMask mask) {
-            if (self.body.HasBuff(petrifiedBloodBuff.BuffDef)) {
+            if (self.body.HasBuff(petrifiedBloodBuff)) {
                 float healAmount = self.fullHealth * percent;
                 float finalHealth = self.health + healAmount;
                 if (finalHealth / self.fullHealth > 0.5f) {

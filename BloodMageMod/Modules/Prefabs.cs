@@ -7,6 +7,7 @@ namespace BloodMageMod.Modules
 {
     public class Prefabs
     {
+        
     }
 
     internal class BodyInfo
@@ -56,5 +57,12 @@ namespace BloodMageMod.Modules
         internal Vector3 aimOriginPosition = new Vector3(0f, 1.8f, 0f);
         internal Vector3 modelBasePosition = new Vector3(0f, -0.92f, 0f);
         internal Vector3 cameraPivotPosition = new Vector3(0f, 1.6f, 0f);
+    }
+
+    internal class CustomRendererInfo
+    {
+        internal string childName;
+        internal Material material;
+        internal bool ignoreOverlays;
     }
 }
