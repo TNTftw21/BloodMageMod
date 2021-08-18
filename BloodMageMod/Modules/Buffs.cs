@@ -10,6 +10,7 @@ namespace BloodMageMod.Modules
     public static class Buffs
     {
         public static BuffDef petrifiedBloodBuff;
+        public static BuffDef petrifiedBloodDot;
         public static BuffDef doomDesireBuff;
         
         internal static List<BuffDef> buffDefs = new List<BuffDef>();
@@ -17,9 +18,11 @@ namespace BloodMageMod.Modules
         public static void RegisterBuffs()
         {
             petrifiedBloodBuff = CreateBuffDef("Petrified Blood", Assets.mainAssetBundle.LoadAsset<Sprite>("assets/sprites/buffs/petrifiedblood.png"),
-                new Color(0.8039216f, 0.482352942f, 0.843137264f), false, false);
+                new Color(1f, 1f, 1f), false, false);
+            petrifiedBloodDot = CreateBuffDef("Petrified Blood DoT", Assets.mainAssetBundle.LoadAsset<Sprite>("assets/sprites/buffs/petrifiedblood.png"),
+                new Color(1f, 0.8f, 0.8f), false, true);
             doomDesireBuff = CreateBuffDef("Doom Desire", Assets.mainAssetBundle.LoadAsset<Sprite>("assets/sprites/buffs/doomdesire.png"),
-                new Color(0.560784214f, 0.247058824f, 0.729411765f), true, false);
+                new Color(1f, 1f, 1f), true, false);
         }
 
         public static BuffDef CreateBuffDef(string name, Sprite icon, Color color, bool isDebuff = false, bool canStack = false) {

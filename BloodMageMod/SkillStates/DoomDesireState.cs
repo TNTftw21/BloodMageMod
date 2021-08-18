@@ -16,24 +16,26 @@ namespace BloodMageMod.SkillStates
             On.RoR2.CharacterBody.OnBuffFinalStackLost += DoomDesireProc;
         }
 
-        private const float duration = 10.0f;
-        private const float damageCoefficient = 10.0f;
+        private const float skillDuration = 0.5f;
+        private const float duration = 3.0f;
+        private const float damageCoefficient = 30.0f;
+        
 
         public override void OnEnter()
         {
             base.OnEnter();
-            if (base.isAuthority) {
-                DoomDesireTracker ddt = base.gameObject.GetComponent<DoomDesireTracker>();
+            if (this.isAuthority) {
+                DoomDesireTracker ddt = this.gameObject.GetComponent<DoomDesireTracker>();
                 if (ddt != null && ddt.target != null) {
                     Chat.AddMessage("Detonating current debuff!");
                     ddt.target.body.RemoveBuff(doomDesireBuff);
-                    base.characterBody.RemoveBuff(doomDesireBuff);
+                    this.characterBody.RemoveBuff(doomDesireBuff);
                 } else {
-                    Ray aimRay = base.GetAimRay();
+                    Ray aimRay = this.GetAimRay();
                     RaycastHit hit;
                     bool hitSomething = Physics.Raycast(aimRay.origin, aimRay.direction, out hit, 50f, LayerIndex.world.mask | LayerIndex.entityPrecise.mask, QueryTriggerInteraction.Ignore);
                     if (!hitSomething) {
-                        base.activatorSkillSlot.AddOneStock();
+                        this.activatorSkillSlot.AddOneStock();
                         outer.SetNextStateToMain();
                         return;
                     }
@@ -42,13 +44,14 @@ namespace BloodMageMod.SkillStates
                     {
                         HealthComponent hitTarget = hitHurtBox.healthComponent;
                         if (!ddt)
-                            ddt = base.gameObject.AddComponent<DoomDesireTracker>();
+                            ddt = this.gameObject.AddComponent<DoomDesireTracker>();
                         ddt.target = hitTarget;
-                        hitTarget.body.AddTimedBuff(doomDesireBuff, duration, 1);
-                        base.characterBody.AddTimedBuff(doomDesireBuff, duration, 1);
+                        //Add in a little bit of lead time because of the animation
+                        hitTarget.body.AddTimedBuff(doomDesireBuff, duration + (skillDuration / this.characterBody.attackSpeed), 1);
+                        this.characterBody.AddTimedBuff(doomDesireBuff, duration + (skillDuration / this.characterBody.attackSpeed), 1);
                     } else
                     {
-                        base.activatorSkillSlot.AddOneStock();
+                        this.activatorSkillSlot.AddOneStock();
                     }
                 }
                 
@@ -59,8 +62,8 @@ namespace BloodMageMod.SkillStates
 
         public override void FixedUpdate()
         {
-            base.FixedUpdate();
-            if (base.isAuthority) {
+            this.FixedUpdate();
+            if (this.isAuthority && this.fixedAge > skillDuration / this.characterBody.attackSpeed) {
                 outer.SetNextStateToMain();
                 return;
             }

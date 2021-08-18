@@ -22,6 +22,7 @@ namespace BloodMageMod.SkillStates
         internal const float dotPercent = 0.6f;
         internal const float dotDuration = 4f;
         internal const float dotTickrate = 1f;
+        internal const float duration = 0.5f;
 
         public override void OnEnter() {
             base.OnEnter();
@@ -35,6 +36,13 @@ namespace BloodMageMod.SkillStates
                     if (base.healthComponent.health / base.healthComponent.fullHealth > 0.5f)
                         base.healthComponent.health = base.healthComponent.fullHealth * 0.5f;
                 }
+            }
+        }
+
+        public override void FixedUpdate()
+        {
+            base.FixedUpdate();
+            if (this.fixedAge > duration && isAuthority) {
                 outer.SetNextStateToMain();
                 return;
             }
@@ -57,6 +65,7 @@ namespace BloodMageMod.SkillStates
                     var totalTicks = time * ticksPerSecond;
                     damageInfo.damage -= damage;
                     degenComp.DegenStacks.Add(new DegenStack(1 / ticksPerSecond, totalTicks, damage / totalTicks, damageInfo.attacker));
+                    self.body.AddTimedBuff(Modules.Buffs.petrifiedBloodDot, dotDuration, 1);
                 }
             }
 
