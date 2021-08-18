@@ -6,9 +6,8 @@ Introducing the Blood Mage, a powerful magician who focuses on spending the life
 Her kit is based around the idea that some of her skills spend health, adding the spent amount to the skill's base damage. This in turn increases her damage further by her passive skill, which increases her damage by up to 50% based on how much health she's missing. Playing with this kit entails balancing her passive with the need to not be instantly killed by the myriad threats of Petrichor V.
 
 ## Skills
-### NOTE: As the survivor itself has not been implemented, these skills are currently added to Artificer.
 
-### Passive
+### Passive NOT IMPLEMENTED - Coming Soon!
 Pain Attunement: You deal more base damage based on how damaged you are, starting at 0% increased damage at full health and rising to 50% at 1 HP.
 
 ### Primary
