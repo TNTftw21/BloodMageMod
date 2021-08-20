@@ -1,0 +1,3 @@
+[submodule "BloodMageMod/libs/AudioEngineFix"]
+	path = BloodMageMod/libs/AudioEngineFix
+	url = https://github.com/x753/RoR2-Audio-Engine-Fix.git

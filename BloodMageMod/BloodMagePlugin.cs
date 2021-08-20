@@ -6,7 +6,7 @@ using RoR2;
 using UnityEngine;
 
 namespace BloodMageMod {
-    [BepInDependency("com.bepis.r2api")]
+    [BepInDependency("com.bepis.r2api"), BepInDependency("com.x753.AudioEngineFix")]
     [BepInPlugin(
         MODUID,
         MODNAME,
@@ -62,14 +62,6 @@ namespace BloodMageMod {
             bloodMageDef.descriptionToken = Modules.Tokens.prefix + "DESC";
             bloodMageDef.unlockableDef = null;
             bloodMageDef.primaryColor = new Color(0.8039216f, 0.482352942f, 0.843137264f);
-            /* new SurvivorDef
-            {
-                bodyPrefab = survivorPrefab,
-                descriptionToken = Modules.Tokens.prefix + "DESC",
-                displayPrefab = Resources.Load<GameObject>("Prefabs/Characters/BanditDisplay"),
-                primaryColor = new Color(0.8039216f, 0.482352942f, 0.843137264f),
-                unlockableDef = null
-            };*/
 
             Modules.Skills.CreateSkillFamilies(bloodMagePrefab);
             Modules.Skills.SetupSkills(bloodMagePrefab);
@@ -79,16 +71,8 @@ namespace BloodMageMod {
 
         private void Hook()
         {
-            //On.RoR2.SurvivorCatalog.Init += AddSkills;
             SkillStates.PetrifiedBloodState.Hooks();
             SkillStates.DoomDesireState.Hooks();
-        }
-
-        private void AddSkills(On.RoR2.SurvivorCatalog.orig_Init orig) {
-            orig();
-
-            GameObject survivorPrefab = SurvivorCatalog.GetSurvivorDef(SurvivorCatalog.FindSurvivorIndex("Mage")).bodyPrefab;
-            Modules.Skills.SetupSkills(survivorPrefab);
         }
     }
 }

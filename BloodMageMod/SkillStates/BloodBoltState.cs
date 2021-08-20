@@ -1,5 +1,6 @@
 using EntityStates;
 using RoR2;
+using R2API;
 using System;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -11,8 +12,8 @@ namespace BloodMageMod.SkillStates {
         private const float ticksPerSecond = 2f;
         private const float baseHealthPerTick = baseHealthPerSecond / ticksPerSecond;
         private const float damageCoefficient = 2.0f;
-        private const float releaseDuration = 0.25f;
-        private const float recoverDuration = 0.25f;
+        private const float releaseDuration = 0.15f;
+        private const float recoverDuration = 0.15f;
         public static readonly GameObject hitEffectPrefab = Resources.Load<GameObject>("prefabs/effects/impacteffects/critspark");
         public static readonly GameObject tracerEffectPrefab = Resources.Load<GameObject>("prefabs/effects/tracers/tracerbanditshotgun");
 
@@ -23,10 +24,14 @@ namespace BloodMageMod.SkillStates {
 
         public override void OnEnter() {
             base.OnEnter();
-            if (!this.SelfDamage() && base.isAuthority) {
+            if (!this.SelfDamage() && this.isAuthority) {
                 outer.SetNextStateToMain();
                 return;
             };
+            AudioSource source = this.gameObject.GetComponentInParent<AudioSource>() ?? this.gameObject.AddComponent<AudioSource>();
+            source.clip = Modules.Assets.mainAssetBundle.LoadAsset<AudioClip>("assets/sounds/skills/bloodbolt_charge.wav");
+            source.loop = true;
+            source.Play();
         }
 
         public override void FixedUpdate() {
@@ -36,6 +41,7 @@ namespace BloodMageMod.SkillStates {
             if (!hasReleased && !IsKeyDownAuthority()) {
                 this.hasReleased = true;
                 this.timeSinceLastTick = 0f;
+                this.gameObject.GetComponent<AudioSource>()?.Stop();
                 return;
             }
 
@@ -46,6 +52,7 @@ namespace BloodMageMod.SkillStates {
                 timeSinceLastTick = 0.0f;
                 if (!SelfDamage()) {
                     this.hasReleased = true;
+                    this.gameObject.GetComponent<AudioSource>()?.Stop();
                     return;
                 }
             }
@@ -66,6 +73,7 @@ namespace BloodMageMod.SkillStates {
         public override void OnExit()
         {
             if (!hasFired) this.Fire();
+            this.gameObject.GetComponent<AudioSource>()?.Stop();
             base.OnExit();
         }
 
@@ -75,9 +83,14 @@ namespace BloodMageMod.SkillStates {
 
         private bool SelfDamage() {
             float healthToTake = RoR2.Run.instance.compensatedDifficultyCoefficient * baseHealthPerTick;
-            if (this.characterBody.healthComponent.combinedHealth > baseHealthPerTick) {
-                this.characterBody.healthComponent.health -= baseHealthPerTick;
-                this.healthAbsorb += baseHealthPerTick;
+            if (this.characterBody.healthComponent.combinedHealth > healthToTake) {
+                this.characterBody.healthComponent.health -= healthToTake;
+                this.healthAbsorb += healthToTake;
+                if (this.characterBody.HasBuff(Modules.Buffs.doomDesireBuff))
+                {
+                    DoomDesireTracker ddt = this.gameObject.GetComponent<DoomDesireTracker>() ?? this.gameObject.AddComponent<DoomDesireTracker>();
+                    ddt.StoredDamage += healthToTake;
+                }
                 return true;
             }
             return false;
@@ -86,6 +99,10 @@ namespace BloodMageMod.SkillStates {
         private void Fire() {
             this.hasFired = true;
             if (this.healthAbsorb > 0) {
+                AudioSource source = this.gameObject.GetComponent<AudioSource>() ?? this.gameObject.AddComponent<AudioSource>();
+                source.loop = false;
+                source.clip = Modules.Assets.mainAssetBundle.LoadAsset<AudioClip>("assets/sounds/skills/bloodbolt_fire.wav");
+                source.Play();
                 Ray aimRay = this.GetAimRay();
                 
                 new BulletAttack {

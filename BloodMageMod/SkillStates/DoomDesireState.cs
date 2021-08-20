@@ -62,7 +62,7 @@ namespace BloodMageMod.SkillStates
 
         public override void FixedUpdate()
         {
-            this.FixedUpdate();
+            base.FixedUpdate();
             if (this.isAuthority && this.fixedAge > skillDuration / this.characterBody.attackSpeed) {
                 outer.SetNextStateToMain();
                 return;

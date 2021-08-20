@@ -3,6 +3,9 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# Original sound files I used that shouldn't be reuploaded
+sounds_unaltered/
+
 # User-specific files
 *.suo
 *.user
